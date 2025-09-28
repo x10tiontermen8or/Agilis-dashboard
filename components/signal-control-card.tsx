@@ -43,6 +43,9 @@ export function SignalControlCard({ feed }: { feed: VideoFeed }) {
 
   const currentStyles = statusStyles[feed.controlStatus];
   const StatusIcon = currentStyles.icon;
+  const ns = feed.signalState?.ns ?? 'gray';
+  const ew = feed.signalState?.ew ?? 'gray';
+
 
   return (
     <motion.div
