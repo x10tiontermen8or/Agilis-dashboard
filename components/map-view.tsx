@@ -5,7 +5,16 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import type { VideoFeed } from '@/app/data/traffic-data'
+// The API now sends a combined 'coords' property, so we adjust the type here.
+// Note: We are no longer importing 'Junction' from Prisma on the client-side.
+type Feed = {
+  id: number;
+  name: string;
+  location: string;
+  status: 'normal' | 'congested' | 'incident' | 'offline';
+  vehicleCount: number;
+  coords: [number, number];
+};
 
 // Fix for default icon issue with React-Leaflet
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
@@ -18,8 +27,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: shadowUrl.src,
 });
 
-// Function to get a colored icon based on status
-const getStatusIcon = (status: VideoFeed['status']) => {
+const getStatusIcon = (status: Feed['status']) => {
   const color = {
     normal: 'green',
     congested: 'orange',
@@ -39,11 +47,11 @@ const getStatusIcon = (status: VideoFeed['status']) => {
 };
 
 interface MapViewProps {
-  feeds: VideoFeed[];
+  feeds: Feed[];
 }
 
 export function MapView({ feeds }: MapViewProps) {
-  const defaultPosition: [number, number] = [28.6139, 77.2090]; // Centered on Delhi
+  const defaultPosition: [number, number] = [28.6139, 77.2090];
 
   return (
     <MapContainer center={defaultPosition} zoom={12} style={{ height: '100%', width: '100%' }}>
@@ -53,6 +61,7 @@ export function MapView({ feeds }: MapViewProps) {
       />
 
       {feeds.map(feed => (
+        // 👇 This is the corrected line
         <Marker key={feed.id} position={feed.coords} icon={getStatusIcon(feed.status)}>
           <Popup>
             <div className="font-sans">

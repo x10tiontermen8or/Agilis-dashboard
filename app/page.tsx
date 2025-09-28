@@ -1,9 +1,8 @@
-import { TrafficDashboard } from "@/components/traffic-dashboard"
+// 📂 app/page.tsx
+'use client';
+
+import { TrafficDashboard } from '@/components/traffic-dashboard';
 
 export default function Home() {
-  return (
-    <main className="min-h-screen bg-background">
-      <TrafficDashboard />
-    </main>
-  )
+  return <TrafficDashboard />;
 }

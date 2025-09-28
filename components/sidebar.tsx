@@ -1,11 +1,23 @@
 // 📂 components/sidebar.tsx
 
-import Link from 'next/link'
-import { Bell, Home, LineChart, Map, Package, Settings, Users } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Bell, Home, LineChart, Map, Package, Settings, Siren, BarChart, HardDrive } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function Sidebar() {
+  const pathname = usePathname();
+  const navLinks = [
+    { href: '/', label: 'Overview', icon: Home },
+    { href: '/analytics', label: 'Analytics', icon: LineChart },
+    { href: '#', label: 'Signal Controls', icon: HardDrive },
+    { href: '#', label: 'Alerts', icon: Siren },
+    { href: '#', label: 'Performance', icon: BarChart },
+    { href: '/map', label: 'City Map', icon: Map },
+  ];
+
   return (
     <div className="hidden border-r bg-muted/40 md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
@@ -21,35 +33,32 @@ export function Sidebar() {
         </div>
         <div className="flex-1">
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-            <Link
-              href="/"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-            >
-              <Home className="h-4 w-4" />
-              Dashboard
-            </Link>
-            <Link
-              href="/map"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-            >
-              <Map className="h-4 w-4" />
-              Map View
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-            >
-              <LineChart className="h-4 w-4" />
-              Analytics
-            </Link>
+            {navLinks.map(({ href, label, icon: Icon }) => (
+              <Link
+                key={label}
+                href={href}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-muted hover:text-primary ${
+                  pathname === href ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </Link>
+            ))}
           </nav>
         </div>
         <div className="mt-auto p-4">
-            <Button size="sm" className="w-full">
-              Settings
-            </Button>
+          <Link
+            href="/settings"
+            className={`flex items-center w-full gap-3 rounded-md px-3 py-2 transition-all hover:bg-muted hover:text-primary text-sm ${
+                pathname === '/settings' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+            }`}
+          >
+            <Settings className="h-4 w-4" />
+            Settings
+          </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }

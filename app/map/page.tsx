@@ -1,35 +1,24 @@
 // 📂 app/map/page.tsx
+'use client';
 
-'use client'
-
-import { useState, useEffect } from "react";
+import { useData } from '@/app/context/data-context';
 import dynamic from 'next/dynamic';
-import type { VideoFeed } from "@/app/data/traffic-data";
 
 const MapView = dynamic(() => import('@/components/map-view').then(mod => mod.MapView), {
   ssr: false,
-  loading: () => <p className="p-4">Loading map...</p>
+  loading: () => <p>Loading map...</p>
 });
 
 export default function MapPage() {
-  const [feeds, setFeeds] = useState<VideoFeed[]>([]);
+  const { feeds, isLoading } = useData();
 
-  useEffect(() => {
-    const fetchFeeds = async () => {
-      const response = await fetch('/api/feeds');
-      const data = await response.json();
-      setFeeds(data);
-    };
-
-    fetchFeeds();
-    const interval = setInterval(fetchFeeds, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  if (isLoading) {
+    return <div>Loading map data...</div>
+  }
 
   return (
-    <div className="flex flex-col h-full w-full">
-        <h1 className="text-lg font-semibold md:text-2xl mb-4">Live Map View</h1>
-        <div className="flex-grow w-full rounded-lg border overflow-hidden">
+    <div className="h-full w-full flex-grow">
+        <div className="h-[calc(100vh-120px)] w-full rounded-lg border overflow-hidden">
             <MapView feeds={feeds} />
         </div>
     </div>
