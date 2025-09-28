@@ -1,32 +1,23 @@
 // 📂 components/alerts-panel.tsx
+'use client';
 
-'use client'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, ShieldCheck } from "lucide-react";
+import { useData } from "@/app/context/data-context";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { AlertTriangle, ShieldCheck } from "lucide-react"
-import type { VideoFeed } from "@/app/data/traffic-data"
-
-interface AlertsPanelProps {
-  feeds: VideoFeed[];
-}
-
-export function AlertsPanel({ feeds }: AlertsPanelProps) {
+export function AlertsPanel() {
+  const { feeds, refreshData } = useData();
   const incidentFeeds = feeds.filter(feed => feed.status === 'incident');
 
   const handleClearIncident = async (feedId: number) => {
-    try {
-      await fetch(`/api/feeds/${feedId}/status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'normal' }),
-      });
-    } catch (error) {
-      console.error("Failed to clear incident:", error);
-    }
+    await fetch(`/api/feeds/${feedId}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'normal' }),
+    });
+    refreshData();
   };
 
   return (
@@ -34,7 +25,7 @@ export function AlertsPanel({ feeds }: AlertsPanelProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 text-destructive" />
-          <span>Active Alerts</span>
+          <span>Active Incidents</span>
           <Badge variant="destructive">{incidentFeeds.length}</Badge>
         </CardTitle>
       </CardHeader>
@@ -47,24 +38,20 @@ export function AlertsPanel({ feeds }: AlertsPanelProps) {
                   <p className="font-semibold">{feed.name}</p>
                   <p className="text-sm text-muted-foreground">{feed.location}</p>
                 </div>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={() => handleClearIncident(feed.id)}
-                >
+                <Button size="sm" variant="outline" onClick={() => handleClearIncident(feed.id)}>
                   <ShieldCheck className="w-4 h-4 mr-2" />
-                  Clear
+                  Resolve
                 </Button>
               </li>
             ))}
           </ul>
         ) : (
           <div className="text-center text-muted-foreground py-4">
-            <ShieldCheck className="w-8 h-8 mx-auto mb-2" />
-            <p>No active incidents. System is clear.</p>
+            <ShieldCheck className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p>No active incidents.</p>
           </div>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

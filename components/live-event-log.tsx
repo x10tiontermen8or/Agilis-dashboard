@@ -3,8 +3,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { VideoFeed } from '@/app/data/traffic-data';
 import { List } from 'lucide-react';
+import { useData } from '@/app/context/data-context';
+import type { VideoFeed } from '@/app/data/traffic-data';
 
 interface LogEntry {
   id: number;
@@ -12,33 +13,32 @@ interface LogEntry {
   message: string;
 }
 
-interface EventLogProps {
-  feeds: VideoFeed[];
-}
-
-export function LiveEventLog({ feeds }: EventLogProps) {
+export function LiveEventLog() {
+  const { feeds } = useData();
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const prevFeedsRef = useRef<VideoFeed[]>([]);
 
   useEffect(() => {
-    const newLogs: LogEntry[] = [];
-    const currentTime = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    if (feeds && feeds.length > 0) {
+      const newLogs: LogEntry[] = [];
+      const currentTime = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-    feeds.forEach(currentFeed => {
-      const prevFeed = prevFeedsRef.current.find(pf => pf.id === currentFeed.id);
-      if (prevFeed && currentFeed.status !== prevFeed.status) {
-        newLogs.push({
-          id: Date.now() + Math.random(),
-          time: currentTime,
-          message: `${currentFeed.name} status changed to ${currentFeed.status}.`,
-        });
+      feeds.forEach(currentFeed => {
+        const prevFeed = prevFeedsRef.current.find(pf => pf.id === currentFeed.id);
+        if (prevFeed && currentFeed.status !== prevFeed.status) {
+          newLogs.push({
+            id: Date.now() + Math.random(),
+            time: currentTime,
+            message: `${currentFeed.name} status changed to ${currentFeed.status}.`,
+          });
+        }
+      });
+      
+      if (newLogs.length > 0) {
+          setLogs(prev => [...newLogs, ...prev].slice(0, 10));
       }
-    });
-
-    if (newLogs.length > 0) {
-        setLogs(prev => [...newLogs, ...prev].slice(0, 10)); // Keep last 10 log entries
+      prevFeedsRef.current = feeds;
     }
-    prevFeedsRef.current = feeds;
   }, [feeds]);
 
   return (
@@ -49,7 +49,7 @@ export function LiveEventLog({ feeds }: EventLogProps) {
           Live Event Log
         </CardTitle>
         <CardDescription>A real-time log of status changes.</CardDescription>
-      </CardHeader>
+      </CardHeader> {/* 👈 This line was fixed */}
       <CardContent className="h-[200px] overflow-y-auto pr-2">
         <ul className="space-y-2">
           {logs.map(log => (

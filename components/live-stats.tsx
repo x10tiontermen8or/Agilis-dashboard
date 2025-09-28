@@ -1,15 +1,15 @@
 // 📂 components/live-stats.tsx
 'use client';
 
+import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Car, Clock, Zap, Users } from 'lucide-react';
 import { useData } from '@/app/context/data-context';
 
-export function LiveStats() {
+export const LiveStats = memo(function LiveStats() {
   const { feeds } = useData();
-
   const totalVehicles = feeds.reduce((sum, feed) => sum + feed.vehicleCount, 0);
-  const avgWaitTime = (feeds.reduce((sum, feed) => sum + parseFloat(feed.waitTime), 0) / feeds.length).toFixed(1);
+  const avgWaitTime = (feeds.reduce((sum, feed) => sum + parseFloat(feed.waitTime), 0) / feeds.length || 0).toFixed(1);
 
   return (
     <Card>
@@ -48,4 +48,4 @@ export function LiveStats() {
       </CardContent>
     </Card>
   );
-}
+});

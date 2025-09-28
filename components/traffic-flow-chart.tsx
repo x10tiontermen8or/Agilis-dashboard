@@ -20,7 +20,7 @@ export function TrafficFlowChart() {
             setData(jsonData);
         };
         fetchData();
-        const interval = setInterval(fetchData, 5000); // Refresh every 5 seconds
+        const interval = setInterval(fetchData, 5000);
         return () => clearInterval(interval);
     }, []);
 
@@ -33,7 +33,13 @@ export function TrafficFlowChart() {
             <CardContent className="h-[350px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <defs>
+                            <linearGradient id="colorVehicles" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis dataKey="time" />
                         <YAxis />
                         <Tooltip
@@ -42,7 +48,7 @@ export function TrafficFlowChart() {
                                 borderColor: 'hsl(var(--border))',
                             }}
                         />
-                        <Area type="monotone" dataKey="vehicles" strokeWidth={2} />
+                        <Area type="monotone" dataKey="vehicles" strokeWidth={2} stroke="hsl(var(--primary))" fill="url(#colorVehicles)" />
                     </AreaChart>
                 </ResponsiveContainer>
             </CardContent>

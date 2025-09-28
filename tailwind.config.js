@@ -34,10 +34,14 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "border-spin": {
+          '100%': { transform: 'rotate(-360deg)' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "border-spin": "border-spin 7s linear infinite",
       },
       gridTemplateColumns: {
         '24': 'repeat(24, minmax(0, 1fr))',
@@ -46,7 +50,6 @@ module.exports = {
   },
   plugins: [
     require("tailwindcss-animate"),
-    // Plugin for 3D effects
     plugin(function ({ addUtilities }) {
       addUtilities({
         ".[transform-style:preserve-3d]": {

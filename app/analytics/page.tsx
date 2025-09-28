@@ -5,12 +5,30 @@ import { AnalyticsStatCards } from '@/components/analytics-stat-cards';
 import { TrafficFlowChart } from '@/components/traffic-flow-chart';
 import { CongestionLevels } from '@/components/congestion-levels';
 import { WeeklyTrendsChart } from '@/components/weekly-trends-chart';
+import { SignalEfficiencyTab } from '@/components/signal-efficiency-tab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import dynamic from 'next/dynamic';
+
+// Lazily load the map to improve initial page speed
+const TrafficHotspotsMap = dynamic(() =>
+    import('@/components/traffic-hotspots-map').then(mod => mod.TrafficHotspotsMap),
+    { 
+        ssr: false,
+        loading: () => <div className="h-[300px] w-full flex items-center justify-center"><p>Loading map...</p></div>
+    }
+);
 
 export default function AnalyticsPage() {
   return (
     <div className="flex flex-col gap-4">
-      <AnalyticsStatCards />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+            <AnalyticsStatCards />
+        </div>
+        <div>
+            <TrafficHotspotsMap />
+        </div>
+      </div>
       
       <Tabs defaultValue="traffic-flow">
         <TabsList className="grid w-full grid-cols-4">
@@ -30,7 +48,7 @@ export default function AnalyticsPage() {
           <WeeklyTrendsChart />
         </TabsContent>
         <TabsContent value="signal-efficiency" className="mt-4">
-            <p className="p-10 text-center text-muted-foreground">Signal Efficiency charts will go here.</p>
+          <SignalEfficiencyTab />
         </TabsContent>
       </Tabs>
     </div>
